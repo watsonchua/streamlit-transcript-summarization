@@ -48,7 +48,7 @@ def main():
     with st.container():
         # st.text_area("Synopsis", value=synopsis)
         with st.expander("Synopsis", expanded=True):
-            st.markdown(synopsis)
+            st.write(synopsis)
 
     
     
@@ -58,7 +58,7 @@ def main():
             for index, row in df_tm_filtered.iterrows():
                 # st.text_area(label=row['summary_method'], value=row['content'])
                 st.caption(row['summary_method'])
-                st.markdown(row['content'])
+                st.write((row['content']))
 
 
 
