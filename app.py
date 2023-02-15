@@ -48,7 +48,7 @@ def main():
     with st.container():
         # st.text_area("Synopsis", value=synopsis)
         with st.expander("Synopsis", expanded=True):
-            st.write(synopsis)
+            st.write(fr"{synopsis}")
 
     
     
@@ -57,8 +57,8 @@ def main():
             df_tm_filtered = df_filtered[df['transcription_method']==tm]
             for index, row in df_tm_filtered.iterrows():
                 # st.text_area(label=row['summary_method'], value=row['content'])
-                st.caption(row['summary_method'])
-                st.write((row['content']))
+                st.caption(fr"{row['summary_method']}")
+                st.write(fr"{row['content']}")
 
 
 
