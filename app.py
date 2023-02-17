@@ -28,7 +28,7 @@ def main():
 
 
         # summariser filter
-        all_summarizers = ['All'] + [m for m in df['summary_method'].unique() if m != 'Manual']
+        all_summarizers = ['All'] + [m for m in df['summary_method'].unique() if m != 'None']
         summarizer_filter = st.multiselect('Summariser(s)', all_summarizers, default=all_summarizers)
     
         if 'All' in summarizer_filter:
