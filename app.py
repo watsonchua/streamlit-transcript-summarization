@@ -4,9 +4,10 @@ import re
 
 
 
-@st.cache
+@st.cache_data()
 def read_df():
     df = pd.read_csv('./df_summaries.csv')
+    df['transcription_method'] = df['transcription_method'].apply(lambda x: 'Transcribe (Current)' if x == 'Transcribe' else 'Transcribe (Upcoming)' if x=='Whisper'  else x)
 
     return df
 
@@ -42,7 +43,7 @@ def main():
 
 
         # summariser filter
-        all_summarizers = ['All'] + [m for m in df['summary_method'].unique() if m != 'None']
+        all_summarizers = ['All'] + [m for m in sorted(df['summary_method'].unique()) if m != 'None']
         summarizer_filter = st.multiselect('Summariser(s)', all_summarizers, default=all_summarizers)
     
         if 'All' in summarizer_filter:
@@ -50,7 +51,7 @@ def main():
 
 
         # transcription filter
-        all_transcriptions = ['All'] + [m for m in df['transcription_method'].unique() if m != 'Synopsis']
+        all_transcriptions = ['All'] + [m for m in sorted(df['transcription_method'].unique()) if m != 'Synopsis']
         transcription_filter = st.multiselect('Transcription(s)', all_transcriptions, default=all_transcriptions)
     
         if 'All' in transcription_filter:
