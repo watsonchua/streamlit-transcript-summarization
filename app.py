@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 
-
+transcription_order = ['NLB Manual', 'NLB Auto', 'Transcribe (Current)', 'Transcribe (Upcoming)']
 
 @st.cache_data()
 def read_df():
@@ -63,10 +63,22 @@ def main():
     
     with st.container():
         st.subheader('Transcripts')
-        for tm in sorted(df_filtered['transcription_method'].unique()):
-            df_tm_filtered = df_filtered[df['transcription_method']==tm]
-            with st.expander(tm):
-                st.text_area(label='', value=df_tm_filtered['transcript'].iloc[0], height=500)
+
+        manual_transcript_col, others_transcript_col = st.columns((1,1))
+        with manual_transcript_col:
+            with st.expander('NLB Manual', expanded=True):
+                st.text_area(label='', value=df_filtered[df['transcription_method']=='NLB Manual']['transcript'].iloc[0], height=500)
+
+
+        
+        with others_transcript_col:
+            # for tm in sorted(df_filtered['transcription_method'].unique()):
+            for tm in transcription_order:
+                if tm == 'NLB Manual':
+                    continue
+                df_tm_filtered = df_filtered[df['transcription_method']==tm]
+                with st.expander(tm):
+                    st.text_area(label='', value=df_tm_filtered['transcript'].iloc[0], height=500)
 
 
 
@@ -77,16 +89,30 @@ def main():
     with st.container():
         st.subheader('Summaries')
 
-        with st.expander("Synopsis", expanded=True):
-            st.write(escape_markdown(synopsis))
+        manual_col, others_col = st.columns((1,1))
 
-        for tm in sorted(df_filtered['transcription_method'].unique()):
-            with st.expander(tm):
-                df_tm_filtered = df_filtered[df['transcription_method']==tm]
-                for index, row in df_tm_filtered.iterrows():
-                    # st.text_area(label=row['summary_method'], value=row['content'])
-                    st.caption(row['summary_method'])
-                    st.write(escape_markdown(row['summary']))
+        # with st.expander("Synopsis", expanded=True):
+        #     st.write(escape_markdown(synopsis))
+
+        with manual_col:
+            st.markdown('**_Manual Sypnosis_**')
+            with st.expander('Manual Sypnosis', expanded=True):
+                st.write(escape_markdown(synopsis))
+
+
+        
+
+        with others_col:
+            st.markdown('**_Sypnosis from Transcriptions_**')
+            for tm in transcription_order:
+            # for tm in sorted(df_filtered['transcription_method'].unique()):
+
+                with st.expander(tm):
+                    df_tm_filtered = df_filtered[df['transcription_method']==tm]
+                    for index, row in df_tm_filtered.iterrows():
+                        # st.text_area(label=row['summary_method'], value=row['content'])
+                        st.caption(row['summary_method'])
+                        st.write(escape_markdown(row['summary']))
 
 
 
