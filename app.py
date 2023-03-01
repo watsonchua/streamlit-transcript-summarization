@@ -67,7 +67,7 @@ def main():
 
         manual_transcript_col, others_transcript_col = st.columns((1,1))
         with manual_transcript_col:
-            manual_transcript_text = df[df['transcription_method']=='NLB Manual']['transcript'].iloc[0] if len(df[df['transcription_method']=='NLB Manual']['transcript']) > 0 else None
+            manual_transcript_text = df[(df["file_id"] == file_select) & (df['transcription_method']=='NLB Manual')]['transcript'].iloc[0] if len(df[(df["file_id"] == file_select) & (df['transcription_method']=='NLB Manual')]) > 0 else None
             with st.expander('NLB Manual', expanded=True):
                 st.text_area(label='', value=manual_transcript_text, height=500)
 
