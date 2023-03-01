@@ -51,33 +51,34 @@ def main():
 
 
         # # transcription filter
-        # all_transcriptions = ['All'] + [m for m in sorted(df['transcription_method'].unique()) if m != 'Synopsis']
-        # transcription_filter = st.multiselect('Transcription(s)', all_transcriptions, default=all_transcriptions)
+        all_transcriptions = ['All'] + [m for m in sorted(df['transcription_method'].unique()) if m != 'Synopsis']
+        transcription_filter = st.multiselect('Transcription(s)', all_transcriptions, default=all_transcriptions)
     
-        # if 'All' in transcription_filter:
-        #     transcription_filter = all_transcriptions
+        if 'All' in transcription_filter:
+            transcription_filter = all_transcriptions
     
     df_synopsis = df[(df["file_id"] == file_select) & (df['transcription_method'] == 'Synopsis')]
     synopsis = df_synopsis.iloc[0]['summary'] if len(df_synopsis) > 0 else None
-    # df_filtered = df[(df["file_id"] == file_select) & (df['transcription_method'].isin(transcription_filter)) & (df['summary_method'].isin(summarizer_filter))]
-    df_filtered = df[(df["file_id"] == file_select) & (df['summary_method'].isin(summarizer_filter))]
+    df_filtered = df[(df["file_id"] == file_select) & (df['transcription_method'].isin(transcription_filter)) & (df['summary_method'].isin(summarizer_filter))]
+    # df_filtered = df[(df["file_id"] == file_select) & (df['summary_method'].isin(summarizer_filter))]
 
     with st.container():
         st.subheader('Transcripts')
 
         manual_transcript_col, others_transcript_col = st.columns((1,1))
         with manual_transcript_col:
+            manual_transcript_text = df[df['transcription_method']=='NLB Manual']['transcript'].iloc[0] if len(df[df['transcription_method']=='NLB Manual']['transcript']) > 0 else None
             with st.expander('NLB Manual', expanded=True):
-                st.text_area(label='', value=df_filtered[df['transcription_method']=='NLB Manual']['transcript'].iloc[0] if len(df_filtered[df['transcription_method']=='NLB Manual']['transcript']) > 0 else None, height=500)
+                st.text_area(label='', value=manual_transcript_text, height=500)
 
 
         
         with others_transcript_col:
-            # for tm in sorted(df_filtered['transcription_method'].unique()):
-            for tm in transcription_order:
+            for tm in [t for t in transcription_order if t in df_filtered['transcription_method'].unique()]:
+            # for tm in transcription_order:
                 if tm == 'NLB Manual':
                     continue
-                df_tm_filtered = df_filtered[df['transcription_method']==tm]
+                df_tm_filtered = df_filtered[df_filtered['transcription_method']==tm]
                 if len(df_tm_filtered) > 0:
                     with st.expander(tm):
                         st.text_area(label='', value=df_tm_filtered.iloc[0]['transcript'], height=500)
@@ -106,14 +107,13 @@ def main():
 
         with others_col:
             st.markdown('**_Sypnosis from Transcriptions_**')
-            for tm in transcription_order:
+            # for tm in transcription_order:
             # for tm in sorted(df_filtered['transcription_method'].unique()):
-
-                    df_tm_filtered = df_filtered[df['transcription_method']==tm]
+            for tm in [t for t in transcription_order if t in df_filtered['transcription_method'].unique()]:
+                    df_tm_filtered = df_filtered[df_filtered['transcription_method']==tm]
                     if len(df_tm_filtered) > 0:
                         with st.expander(tm):
                             for index, row in df_tm_filtered.iterrows():
-                                # st.text_area(label=row['summary_method'], value=row['content'])
                                 st.caption(row['summary_method'])
                                 st.write(escape_markdown(row['summary']))
 
